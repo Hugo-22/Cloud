@@ -1,7 +1,5 @@
 <?php
 
-
-
     $adresse="./".$_GET['list']."/"; //Adresse du dossier sans oublier le / à la fin.
     $dossier=Opendir($adresse); //Ouverture du dossier.
     while ($Fichier = readdir($dossier)) //On affiche les fichiers les uns après les autres.
