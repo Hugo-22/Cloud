@@ -6,84 +6,51 @@ if (isset($_POST['text'])) {
     header("location: dossiers.php");
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Font Awesome -->
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-<!-- Google Fonts -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
-<!-- Bootstrap core CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.13.0/css/mdb.min.css" rel="stylesheet">
-<!-- JQuery -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!-- Bootstrap tooltips -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
-<!-- MDB core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.13.0/js/mdb.min.js"></script>
-<script src="script.js"></script>
-    <link rel="stylesheet" href="sidebar.css">
-    <link rel="stylesheet" href="table.css">
-    <title>Mes dossiers</title>
-</head>
-<body>
-<aside class="sidebar">
-        <nav class="nav">
-          <ul>
-            <li><a href="index.php">Welcome</a></li>
-            <li class="active"><a href="dossiers.php">Mes Dossiers</a></li>
-            <li><a href="#">??</a></li>
-            <li><a href="#">??</a></li>
-          </ul>
-        </nav>
-      </aside>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-10">
-           
-            <?php
-
+<?php include 'sidebar.php'; ?>
+<table class="table w-75">
+  <thead class="bg-thead white-text">
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Taille</th>
+      <th scope="col">Renommer</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+<?php
 $dir = "./";
 //  si le dossier pointe existe
 if (is_dir($dir)) {
-    ?>
-    <!-- Modal -->
-
-       
-
-    </div>
-  </div>
-</div>
- <table class="table-fill table-hover">
-                <thead class="table-title">
-                        <tr>
-                            <th class="text-center">Mes Dossiers <span type="button" class="fas fa-folder-plus elegant-color" data-toggle="modal" data-target="#basicExampleModal">
-  
-</span> </th>
-                            <th class="text-center">Supprimer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-// si il contient quelque chose
+  // si il contient quelque chose
     if ($dh = opendir($dir)) {
 
         // boucler tant que quelque chose est trouve
         while (($file = readdir($dh)) !== false) {
+          $fichier = new SplFileInfo($file);
+          $extension = $fichier->getExtension();
+          $nom_fichier = $fichier->getBasename($extension);
+          $final = explode(".", $nom_fichier);
+          $filesize = filesize($dir.$file);
+          $result = round($filesize/1000, 1) . " Ko";
+          
 
-            // affiche le nom du dossier
-            if ($file != '.' && $file != '..' && $file != '.DS_Store' && $file != '.git') {
+          // fichiers
+            if ($file != '.' && $file != '..' && $file != '.DS_Store' && $file != '.git' && $extension != "")  {
                 $pathfile = $dir . '' . $file;
-                // echo "fichier : $file : type : " . filetype($dir . $file) . "<br />\n";
-                echo "<tr class='text-center'> <td> <a href='liste_fichier.php?list=$file'</a> $file</td>  <td> <a href='delete.php?delete=$file'>Supprimer</a> </> </tr>";
-            }
+                
+                echo "<tr> <td class='test'> <img src='https://zupimages.net/up/20/08/iscc.png' alt='' width='20' height='20'/> $file</td> <td> $result</td> <td class='text-center'> <span class='far fa-edit warning-color' alt='' width='20' height='20' id='edit' type='button' data-toggle='modal' data-target='#modal-edit'</span></td> </tr>";
+                
+                
+                // <a href='https://zupimages.net/viewer.php?id=20/08/c90l.png'><img src='https://zupimages.net/up/20/08/c90l.png' alt='' width='20' height='20'/></a> 
+            } 
+            // dossiers
+            else if ($file != '.' && $file != '..' && $file != '.DS_Store' && $file != '.git' && $extension == "")
+           {
+            $pathfile = $dir . '' . $file;
+  
+            echo "<tr> <td> <img src='https://zupimages.net/up/20/08/8pwy.png' alt='' width='20' height='20'/> <a href=liste_fichier.php?list=$file> $file </a></td> <td> $result</td> <td class='text-center'> <span class='far fa-edit warning-color' alt='' width='20' height='20' id='edit' type='button' data-toggle='modal' data-target='#modal-edit'</span> </td> </tr>";
+
+           }
         }
         echo "</>";
         // on ferme la connection
@@ -91,9 +58,34 @@ if (is_dir($dir)) {
     }
 }
 ?>
-</tbody>
+  </tbody>
 </table>
+  
 
+<!-- modal edit -->
+<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Renommer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form enctype="multipart/form-data" action="" id="form2" method="post">
+    <input type="text" name="edit" id="edit_txt">
+    <input type="submit" class="btn btn-primary" value="Renommer">
+</form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<!-- fin modal edit -->
+
+<!-- modal création dossier -->
 <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -115,6 +107,16 @@ if (is_dir($dir)) {
 </div>
 </div>
 </div>
+
+<script>
+
+          let test = document.querySelector('.test');
+          console.log(test.textContent);
+          let edit_txt = document.querySelector('#edit_txt');
+          console.log(edit_txt);
+          
+          edit_txt.textContent = test.textContent;
+  </script>
 
 </body>
 </html>
