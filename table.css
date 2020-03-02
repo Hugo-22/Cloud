@@ -1,4 +1,4 @@
-table {
+table, .margin, .h1-index {
   margin-left: 350px;
 }
 
@@ -17,4 +17,10 @@ td > img {
 
 .bg-thead{
   background-color: #145380 !important;
+}
+
+.bg-blue {
+  background-color: #145380 !important;
+  color: unset !important;
+
 }
